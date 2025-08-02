@@ -10,7 +10,7 @@ import 'package:todo/domain/models/todo.dart';
 
 abstract class TodoRepo {
   //retrieve all todos list
-  Future<List<Todo>> getAllTodos();
+  Future<List<Todo>> getTodos();
   //add a new todo
   Future<void> addTodo(Todo newTodo);
   //edit an existing todo

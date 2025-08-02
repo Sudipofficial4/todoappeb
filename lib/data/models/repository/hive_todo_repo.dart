@@ -32,7 +32,7 @@ class HiveTodoRepository implements TodoRepo {
   }
 
   @override
-  Future<List<Todo>> getAllTodos() async {
+  Future<List<Todo>> getTodos() async {
     // Retrieve all todos from the Hive box and convert them to domain models
     final todos = _box.values.map((hiveTodo) => hiveTodo.toDomain()).toList();
     return todos;
