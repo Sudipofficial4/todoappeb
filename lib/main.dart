@@ -1,6 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/adapters.dart';
+import 'package:todo/data/models/hive_todo.dart';
+import 'package:todo/presentation/todo_view.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Initialize any necessary services or repositories here
+  // For example, if using Hive for local storage, initialize it here
+  await Hive.initFlutter();
+  Hive.registerAdapter(HiveTodoAdapter());
+  await Hive.openBox<HiveTodo>('todos');
+
   runApp(const MyApp());
 }
 
@@ -18,7 +28,7 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       title: 'Todo App',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: Scaffold(),
+      home: const TodoListView(),
     );
   }
 }
