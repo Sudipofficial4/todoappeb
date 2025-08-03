@@ -21,6 +21,8 @@ class HiveTodo extends HiveObject {
   late DateTime createdAt;
   @HiveField(5)
   DateTime? dueDate;
+  @HiveField(6)
+  late int priority; // Store as int: 1=low, 2=medium, 3=high
   // convert hive todo to domain todo
   Todo toDomain() {
     return Todo(
@@ -30,6 +32,7 @@ class HiveTodo extends HiveObject {
       isCompleted: isCompleted,
       createdAt: createdAt,
       dueDate: dueDate,
+      priority: Priority.values[priority - 1], // Convert int back to enum
     );
   }
 
@@ -41,6 +44,7 @@ class HiveTodo extends HiveObject {
       ..description = todo.description
       ..isCompleted = todo.isCompleted
       ..createdAt = todo.createdAt
-      ..dueDate = todo.dueDate;
+      ..dueDate = todo.dueDate
+      ..priority = todo.priority.value; // Convert enum to int
   }
 }

@@ -18,6 +18,19 @@ class TodoListView extends StatelessWidget {
         return 'Due Date: Farthest First';
       case SortOption.alphabetical:
         return 'Alphabetical';
+      case SortOption.priority:
+        return 'Priority: High to Low';
+    }
+  }
+
+  String _getFilterOptionLabel(FilterOption option) {
+    switch (option) {
+      case FilterOption.all:
+        return 'All Tasks';
+      case FilterOption.active:
+        return 'Active Tasks';
+      case FilterOption.completed:
+        return 'Completed Tasks';
     }
   }
 
@@ -26,6 +39,7 @@ class TodoListView extends StatelessWidget {
     final titleController = TextEditingController(text: todo.title);
     final descriptionController = TextEditingController(text: todo.description);
     DateTime? selectedDueDate = todo.dueDate;
+    Priority selectedPriority = todo.priority;
 
     // Show a dialog to edit the todo
     showDialog(
@@ -54,6 +68,41 @@ class TodoListView extends StatelessWidget {
                       border: OutlineInputBorder(),
                     ),
                     maxLines: 3,
+                  ),
+                  const SizedBox(height: 16),
+                  DropdownButtonFormField<Priority>(
+                    value: selectedPriority,
+                    decoration: const InputDecoration(
+                      labelText: 'Priority',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: Priority.values.map((Priority priority) {
+                      return DropdownMenuItem<Priority>(
+                        value: priority,
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.flag,
+                              color: priority == Priority.high
+                                  ? Colors.red
+                                  : priority == Priority.medium
+                                      ? Colors.orange
+                                      : Colors.green,
+                              size: 16,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(priority.displayName),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (Priority? newValue) {
+                      if (newValue != null) {
+                        setState(() {
+                          selectedPriority = newValue;
+                        });
+                      }
+                    },
                   ),
                   const SizedBox(height: 16),
                   Row(
@@ -156,6 +205,7 @@ class TodoListView extends StatelessWidget {
                         createdAt: todo.createdAt,
                         isCompleted: todo.isCompleted,
                         dueDate: selectedDueDate,
+                        priority: selectedPriority,
                       );
                       todoCubit.updateTodo(updatedTodo);
                       Navigator.of(context).pop();
@@ -176,6 +226,7 @@ class TodoListView extends StatelessWidget {
     final titleController = TextEditingController();
     final descriptionController = TextEditingController();
     DateTime? selectedDueDate;
+    Priority selectedPriority = Priority.medium;
 
     // Show a dialog to add a new todo
     showDialog(
@@ -204,6 +255,41 @@ class TodoListView extends StatelessWidget {
                       border: OutlineInputBorder(),
                     ),
                     maxLines: 3,
+                  ),
+                  const SizedBox(height: 16),
+                  DropdownButtonFormField<Priority>(
+                    value: selectedPriority,
+                    decoration: const InputDecoration(
+                      labelText: 'Priority',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: Priority.values.map((Priority priority) {
+                      return DropdownMenuItem<Priority>(
+                        value: priority,
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.flag,
+                              color: priority == Priority.high
+                                  ? Colors.red
+                                  : priority == Priority.medium
+                                      ? Colors.orange
+                                      : Colors.green,
+                              size: 16,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(priority.displayName),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (Priority? newValue) {
+                      if (newValue != null) {
+                        setState(() {
+                          selectedPriority = newValue;
+                        });
+                      }
+                    },
                   ),
                   const SizedBox(height: 16),
                   Row(
@@ -301,6 +387,7 @@ class TodoListView extends StatelessWidget {
                           description: descriptionController.text.trim(),
                           createdAt: DateTime.now(),
                           dueDate: selectedDueDate,
+                          priority: selectedPriority,
                         ),
                       );
                       Navigator.of(context).pop();
@@ -333,6 +420,28 @@ class TodoListView extends StatelessWidget {
         backgroundColor: Theme.of(context).primaryColor,
         foregroundColor: Colors.white,
         actions: [
+          PopupMenuButton<FilterOption>(
+            icon: const Icon(Icons.filter_list),
+            tooltip: 'Filter todos',
+            onSelected: (FilterOption option) {
+              todoCubit.changeFilterOption(option);
+            },
+            itemBuilder: (BuildContext context) {
+              return FilterOption.values.map((FilterOption option) {
+                return PopupMenuItem<FilterOption>(
+                  value: option,
+                  child: Row(
+                    children: [
+                      if (todoCubit.currentFilterOption == option)
+                        const Icon(Icons.check, size: 16),
+                      const SizedBox(width: 8),
+                      Text(_getFilterOptionLabel(option)),
+                    ],
+                  ),
+                );
+              }).toList();
+            },
+          ),
           PopupMenuButton<SortOption>(
             icon: const Icon(Icons.sort),
             tooltip: 'Sort todos',
@@ -439,6 +548,40 @@ class TodoListView extends StatelessWidget {
                               ),
                             ],
                           ),
+                        ),
+                      // Priority indicator
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4.0),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.flag,
+                              size: 16,
+                              color: todo.priority == Priority.high
+                                  ? Colors.red
+                                  : todo.priority == Priority.medium
+                                      ? Colors.orange
+                                      : Colors.green,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '${todo.priority.displayName} Priority',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: todo.priority == Priority.high
+                                    ? Colors.red
+                                    : todo.priority == Priority.medium
+                                        ? Colors.orange
+                                        : Colors.green,
+                                fontWeight: FontWeight.w500,
+                                decoration:
+                                    todo.isCompleted
+                                        ? TextDecoration.lineThrough
+                                        : TextDecoration.none,
+                              ),
+                            ),
+                          ],
+                        ),
                         ),
                     ],
                   ),

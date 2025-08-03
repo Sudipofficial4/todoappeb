@@ -22,13 +22,14 @@ class HiveTodoAdapter extends TypeAdapter<HiveTodo> {
       ..description = fields[2] as String
       ..isCompleted = fields[3] as bool
       ..createdAt = fields[4] as DateTime
-      ..dueDate = fields[5] as DateTime?;
+      ..dueDate = fields[5] as DateTime?
+      ..priority = fields[6] as int;
   }
 
   @override
   void write(BinaryWriter writer, HiveTodo obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -40,7 +41,9 @@ class HiveTodoAdapter extends TypeAdapter<HiveTodo> {
       ..writeByte(4)
       ..write(obj.createdAt)
       ..writeByte(5)
-      ..write(obj.dueDate);
+      ..write(obj.dueDate)
+      ..writeByte(6)
+      ..write(obj.priority);
   }
 
   @override

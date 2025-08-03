@@ -8,6 +8,13 @@ enum SortOption {
   dueDateNearest,
   dueDateFarthest,
   alphabetical,
+  priority,
+}
+
+enum FilterOption {
+  all,
+  active,
+  completed,
 }
 
 class TodoCubit extends Cubit<List<Todo>> {
@@ -15,6 +22,7 @@ class TodoCubit extends Cubit<List<Todo>> {
   //this will be used to interact with the data layer
   final TodoRepo todoRepo;
   SortOption _currentSortOption = SortOption.createdDateNewest;
+  FilterOption _currentFilterOption = FilterOption.all;
 
   TodoCubit(this.todoRepo) : super([]) {
     //initially fetch all todos when the cubit is created
@@ -48,7 +56,8 @@ class TodoCubit extends Cubit<List<Todo>> {
   //fetch all todos from the repository and emit the list
   Future<void> fetchTodos() async {
     final todoList = await todoRepo.getTodos();
-    final sortedList = _sortTodos(todoList);
+    final filteredList = _filterTodos(todoList);
+    final sortedList = _sortTodos(filteredList);
     emit(sortedList);
   }
 
@@ -58,8 +67,29 @@ class TodoCubit extends Cubit<List<Todo>> {
     fetchTodos();
   }
 
+  //change filter option and re-fetch todos
+  Future<void> changeFilterOption(FilterOption filterOption) async {
+    _currentFilterOption = filterOption;
+    fetchTodos();
+  }
+
   //get current sort option
   SortOption get currentSortOption => _currentSortOption;
+
+  //get current filter option
+  FilterOption get currentFilterOption => _currentFilterOption;
+
+  //filter todos based on current filter option
+  List<Todo> _filterTodos(List<Todo> todos) {
+    switch (_currentFilterOption) {
+      case FilterOption.all:
+        return todos;
+      case FilterOption.active:
+        return todos.where((todo) => !todo.isCompleted).toList();
+      case FilterOption.completed:
+        return todos.where((todo) => todo.isCompleted).toList();
+    }
+  }
 
   //sort todos based on current sort option
   List<Todo> _sortTodos(List<Todo> todos) {
@@ -86,6 +116,8 @@ class TodoCubit extends Cubit<List<Todo>> {
         return todos..sort(
           (a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()),
         );
+      case SortOption.priority:
+        return todos..sort((a, b) => b.priority.value.compareTo(a.priority.value));
     }
   }
 }
