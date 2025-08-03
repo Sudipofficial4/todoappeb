@@ -23,7 +23,7 @@ class HiveTodoAdapter extends TypeAdapter<HiveTodo> {
       ..isCompleted = fields[3] as bool
       ..createdAt = fields[4] as DateTime
       ..dueDate = fields[5] as DateTime?
-      ..priority = fields[6] as int;
+      ..priority = fields[6] as int?;
   }
 
   @override
