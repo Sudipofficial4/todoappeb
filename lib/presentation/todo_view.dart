@@ -400,6 +400,7 @@ class TodoListView extends StatelessWidget {
   Widget build(BuildContext context) {
     final todoCubit = context.read<TodoCubit>();
     return Scaffold(
+      //drawer to view details
       drawer: Drawer(
         child: Column(
           children: [
@@ -505,6 +506,7 @@ class TodoListView extends StatelessWidget {
                     ),
                   ),
                 ),
+                //sorting current sort option
                 ...SortOption.values.map((SortOption option) {
                   return PopupMenuItem<String>(
                     value: 'sort_${option.name}',
@@ -546,6 +548,7 @@ class TodoListView extends StatelessWidget {
           ),
         ],
       ),
+      //to take the todo task
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.cyanAccent,
         onPressed: () {

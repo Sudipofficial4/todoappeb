@@ -7,9 +7,6 @@ enum SortOption {
   dueDateFarthest,
   priorityHighToLow,
   priorityLowToHigh,
-  alphabetical,
-  newestFirst,
-  oldestFirst,
 }
 
 enum FilterOption { all, active, completed }
@@ -25,12 +22,6 @@ extension SortOptionExtension on SortOption {
         return 'Priority: High to Low';
       case SortOption.priorityLowToHigh:
         return 'Priority: Low to High';
-      case SortOption.alphabetical:
-        return 'Alphabetical (A-Z)';
-      case SortOption.newestFirst:
-        return 'Created: Newest First';
-      case SortOption.oldestFirst:
-        return 'Created: Oldest First';
     }
   }
 }
@@ -52,7 +43,7 @@ class TodoCubit extends Cubit<List<Todo>> {
   //reference to the Todo repository
   //this will be used to interact with the data layer
   final TodoRepo todoRepo;
-  SortOption _currentSortOption = SortOption.newestFirst;
+  SortOption _currentSortOption = SortOption.dueDateNearest;
   FilterOption _currentFilterOption = FilterOption.all;
 
   TodoCubit(this.todoRepo) : super([]) {
@@ -125,10 +116,6 @@ class TodoCubit extends Cubit<List<Todo>> {
   //sort todos based on current sort option
   List<Todo> _sortTodos(List<Todo> todos) {
     switch (_currentSortOption) {
-      case SortOption.newestFirst:
-        return todos..sort((a, b) => b.createdAt.compareTo(a.createdAt));
-      case SortOption.oldestFirst:
-        return todos..sort((a, b) => a.createdAt.compareTo(b.createdAt));
       case SortOption.dueDateNearest:
         return todos..sort((a, b) {
           if (a.dueDate == null && b.dueDate == null) return 0;
@@ -143,10 +130,7 @@ class TodoCubit extends Cubit<List<Todo>> {
           if (b.dueDate == null) return -1;
           return b.dueDate!.compareTo(a.dueDate!);
         });
-      case SortOption.alphabetical:
-        return todos..sort(
-          (a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()),
-        );
+
       case SortOption.priorityHighToLow:
         return todos
           ..sort((a, b) => b.priority.value.compareTo(a.priority.value));
