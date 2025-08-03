@@ -9,79 +9,130 @@ class TodoListView extends StatelessWidget {
     final todoCubit = context.read<TodoCubit>();
     final titleController = TextEditingController();
     final descriptionController = TextEditingController();
+    DateTime? selectedDueDate;
 
     // Show a dialog to add a new todo
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: const Text('Add New Todo'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Title *',
-                  border: OutlineInputBorder(),
-                ),
-                autofocus: true,
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: descriptionController,
-                decoration: const InputDecoration(
-                  labelText: 'Description (optional)',
-                  border: OutlineInputBorder(),
-                ),
-                maxLines: 3,
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () async {
-                  final date = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime(2000),
-                    lastDate: DateTime(2100),
-                  );
-                  if (date != null) {
-                    final time = await showTimePicker(
-                      context: context,
-                      initialTime: TimeOfDay.now(),
-                    );
-                    // You can handle the selected date and time here if needed
-                  }
-                },
-                child: const Text('Pick Date & Time'),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                if (titleController.text.trim().isNotEmpty) {
-                  todoCubit.addTodo(
-                    Todo(
-                      id: UniqueKey().toString(),
-                      title: titleController.text.trim(),
-                      description: descriptionController.text.trim(),
-                      createdAt: DateTime.now(),
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Add New Todo'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: titleController,
+                    decoration: const InputDecoration(
+                      labelText: 'Title *',
+                      border: OutlineInputBorder(),
                     ),
-                  );
-                  Navigator.of(context).pop();
-                }
-              },
-              child: const Text('Add'),
-            ),
-          ],
+                    autofocus: true,
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: descriptionController,
+                    decoration: const InputDecoration(
+                      labelText: 'Description (optional)',
+                      border: OutlineInputBorder(),
+                    ),
+                    maxLines: 3,
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            final date = await showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime(2100),
+                            );
+                            if (date != null && context.mounted) {
+                              final time = await showTimePicker(
+                                context: context,
+                                initialTime: TimeOfDay.now(),
+                              );
+                              if (time != null) {
+                                setState(() {
+                                  selectedDueDate = DateTime(
+                                    date.year,
+                                    date.month,
+                                    date.day,
+                                    time.hour,
+                                    time.minute,
+                                  );
+                                });
+                              }
+                            }
+                          },
+                          child: const Text('Pick Date & Time'),
+                        ),
+                      ),
+                      if (selectedDueDate != null)
+                        IconButton(
+                          onPressed: () {
+                            setState(() {
+                              selectedDueDate = null;
+                            });
+                          },
+                          icon: const Icon(Icons.clear),
+                          tooltip: 'Clear date',
+                        ),
+                    ],
+                  ),
+                  if (selectedDueDate != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text(
+                        'Due: ${_formatDateTime(selectedDueDate!)}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    if (titleController.text.trim().isNotEmpty) {
+                      todoCubit.addTodo(
+                        Todo(
+                          id: UniqueKey().toString(),
+                          title: titleController.text.trim(),
+                          description: descriptionController.text.trim(),
+                          createdAt: DateTime.now(),
+                          dueDate: selectedDueDate,
+                        ),
+                      );
+                      Navigator.of(context).pop();
+                    }
+                  },
+                  child: const Text('Add'),
+                ),
+              ],
+            );
+          },
         );
       },
     );
+  }
+
+  String _formatDateTime(DateTime dateTime) {
+    return '${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+  }
+
+  bool _isDueDatePassed(DateTime dueDate) {
+    return DateTime.now().isAfter(dueDate);
   }
 
   @override
@@ -130,15 +181,52 @@ class TodoListView extends StatelessWidget {
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 4.0),
                 child: ListTile(
-                  //titile
-                  title: Text(
-                    todo.title,
-                    style: TextStyle(
-                      decoration:
-                          todo.isCompleted
-                              ? TextDecoration.lineThrough
-                              : TextDecoration.none,
-                    ),
+                  //title with due date
+                  title: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        todo.title,
+                        style: TextStyle(
+                          decoration:
+                              todo.isCompleted
+                                  ? TextDecoration.lineThrough
+                                  : TextDecoration.none,
+                        ),
+                      ),
+                      if (todo.dueDate != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4.0),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.schedule,
+                                size: 16,
+                                color:
+                                    _isDueDatePassed(todo.dueDate!)
+                                        ? Colors.red
+                                        : Colors.blue,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                _formatDateTime(todo.dueDate!),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color:
+                                      _isDueDatePassed(todo.dueDate!)
+                                          ? Colors.red
+                                          : Colors.blue,
+                                  fontWeight: FontWeight.w500,
+                                  decoration:
+                                      todo.isCompleted
+                                          ? TextDecoration.lineThrough
+                                          : TextDecoration.none,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
                   ),
                   //description of the work
                   subtitle:

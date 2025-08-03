@@ -19,6 +19,8 @@ class HiveTodo extends HiveObject {
   late bool isCompleted;
   @HiveField(4)
   late DateTime createdAt;
+  @HiveField(5)
+  DateTime? dueDate;
   // convert hive todo to domain todo
   Todo toDomain() {
     return Todo(
@@ -27,6 +29,7 @@ class HiveTodo extends HiveObject {
       description: description,
       isCompleted: isCompleted,
       createdAt: createdAt,
+      dueDate: dueDate,
     );
   }
 
@@ -37,6 +40,7 @@ class HiveTodo extends HiveObject {
       ..title = todo.title
       ..description = todo.description
       ..isCompleted = todo.isCompleted
-      ..createdAt = todo.createdAt;
+      ..createdAt = todo.createdAt
+      ..dueDate = todo.dueDate;
   }
 }

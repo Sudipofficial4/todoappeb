@@ -29,7 +29,7 @@ class _MyAppState extends State<MyApp> {
     final todoBox = Hive.box<HiveTodo>('todos');
     // Create the repository instance
     final todoRepo = HiveTodoRepository(todoBox);
-    
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Todo App',
