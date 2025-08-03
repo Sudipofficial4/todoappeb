@@ -3,12 +3,13 @@ import 'package:todo/domain/models/todo.dart';
 import 'package:todo/domain/repo/todo_repo.dart';
 
 enum SortOption {
-  createdDateNewest,
-  createdDateOldest,
   dueDateNearest,
   dueDateFarthest,
+  priorityHighToLow,
+  priorityLowToHigh,
   alphabetical,
-  priority,
+  newestFirst,
+  oldestFirst,
 }
 
 enum FilterOption {
@@ -17,11 +18,45 @@ enum FilterOption {
   completed,
 }
 
+extension SortOptionExtension on SortOption {
+  String get displayName {
+    switch (this) {
+      case SortOption.dueDateNearest:
+        return 'Due Date: Nearest First';
+      case SortOption.dueDateFarthest:
+        return 'Due Date: Farthest First';
+      case SortOption.priorityHighToLow:
+        return 'Priority: High to Low';
+      case SortOption.priorityLowToHigh:
+        return 'Priority: Low to High';
+      case SortOption.alphabetical:
+        return 'Alphabetical (A-Z)';
+      case SortOption.newestFirst:
+        return 'Created: Newest First';
+      case SortOption.oldestFirst:
+        return 'Created: Oldest First';
+    }
+  }
+}
+
+extension FilterOptionExtension on FilterOption {
+  String get displayName {
+    switch (this) {
+      case FilterOption.all:
+        return 'All Tasks';
+      case FilterOption.active:
+        return 'Active Tasks';
+      case FilterOption.completed:
+        return 'Completed Tasks';
+    }
+  }
+}
+
 class TodoCubit extends Cubit<List<Todo>> {
   //reference to the Todo repository
   //this will be used to interact with the data layer
   final TodoRepo todoRepo;
-  SortOption _currentSortOption = SortOption.createdDateNewest;
+  SortOption _currentSortOption = SortOption.newestFirst;
   FilterOption _currentFilterOption = FilterOption.all;
 
   TodoCubit(this.todoRepo) : super([]) {
@@ -94,9 +129,9 @@ class TodoCubit extends Cubit<List<Todo>> {
   //sort todos based on current sort option
   List<Todo> _sortTodos(List<Todo> todos) {
     switch (_currentSortOption) {
-      case SortOption.createdDateNewest:
+      case SortOption.newestFirst:
         return todos..sort((a, b) => b.createdAt.compareTo(a.createdAt));
-      case SortOption.createdDateOldest:
+      case SortOption.oldestFirst:
         return todos..sort((a, b) => a.createdAt.compareTo(b.createdAt));
       case SortOption.dueDateNearest:
         return todos..sort((a, b) {
@@ -116,8 +151,12 @@ class TodoCubit extends Cubit<List<Todo>> {
         return todos..sort(
           (a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()),
         );
-      case SortOption.priority:
-        return todos..sort((a, b) => b.priority.value.compareTo(a.priority.value));
+      case SortOption.priorityHighToLow:
+        return todos
+          ..sort((a, b) => b.priority.value.compareTo(a.priority.value));
+      case SortOption.priorityLowToHigh:
+        return todos
+          ..sort((a, b) => a.priority.value.compareTo(b.priority.value));
     }
   }
 }

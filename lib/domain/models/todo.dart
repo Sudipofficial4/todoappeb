@@ -10,11 +10,7 @@ model for todo item
   - priority: priority level of the todo item -> Priority (default: medium)
 */
 
-enum Priority {
-  low,
-  medium,
-  high,
-}
+enum Priority { low, medium, high }
 
 extension PriorityExtension on Priority {
   String get displayName {

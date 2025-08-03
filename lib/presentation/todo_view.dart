@@ -7,31 +7,11 @@ class TodoListView extends StatelessWidget {
   const TodoListView({super.key});
 
   String _getSortOptionLabel(SortOption option) {
-    switch (option) {
-      case SortOption.createdDateNewest:
-        return 'Created: Newest First';
-      case SortOption.createdDateOldest:
-        return 'Created: Oldest First';
-      case SortOption.dueDateNearest:
-        return 'Due Date: Nearest First';
-      case SortOption.dueDateFarthest:
-        return 'Due Date: Farthest First';
-      case SortOption.alphabetical:
-        return 'Alphabetical';
-      case SortOption.priority:
-        return 'Priority: High to Low';
-    }
+    return option.displayName;
   }
 
   String _getFilterOptionLabel(FilterOption option) {
-    switch (option) {
-      case FilterOption.all:
-        return 'All Tasks';
-      case FilterOption.active:
-        return 'Active Tasks';
-      case FilterOption.completed:
-        return 'Completed Tasks';
-    }
+    return option.displayName;
   }
 
   void _showEditTodoDialog(BuildContext context, Todo todo) {
@@ -76,26 +56,28 @@ class TodoListView extends StatelessWidget {
                       labelText: 'Priority',
                       border: OutlineInputBorder(),
                     ),
-                    items: Priority.values.map((Priority priority) {
-                      return DropdownMenuItem<Priority>(
-                        value: priority,
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.flag,
-                              color: priority == Priority.high
-                                  ? Colors.red
-                                  : priority == Priority.medium
-                                      ? Colors.orange
-                                      : Colors.green,
-                              size: 16,
+                    items:
+                        Priority.values.map((Priority priority) {
+                          return DropdownMenuItem<Priority>(
+                            value: priority,
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.flag,
+                                  color:
+                                      priority == Priority.high
+                                          ? Colors.red
+                                          : priority == Priority.medium
+                                          ? Colors.orange
+                                          : Colors.green,
+                                  size: 16,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(priority.displayName),
+                              ],
                             ),
-                            const SizedBox(width: 8),
-                            Text(priority.displayName),
-                          ],
-                        ),
-                      );
-                    }).toList(),
+                          );
+                        }).toList(),
                     onChanged: (Priority? newValue) {
                       if (newValue != null) {
                         setState(() {
@@ -263,26 +245,28 @@ class TodoListView extends StatelessWidget {
                       labelText: 'Priority',
                       border: OutlineInputBorder(),
                     ),
-                    items: Priority.values.map((Priority priority) {
-                      return DropdownMenuItem<Priority>(
-                        value: priority,
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.flag,
-                              color: priority == Priority.high
-                                  ? Colors.red
-                                  : priority == Priority.medium
-                                      ? Colors.orange
-                                      : Colors.green,
-                              size: 16,
+                    items:
+                        Priority.values.map((Priority priority) {
+                          return DropdownMenuItem<Priority>(
+                            value: priority,
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.flag,
+                                  color:
+                                      priority == Priority.high
+                                          ? Colors.red
+                                          : priority == Priority.medium
+                                          ? Colors.orange
+                                          : Colors.green,
+                                  size: 16,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(priority.displayName),
+                              ],
                             ),
-                            const SizedBox(width: 8),
-                            Text(priority.displayName),
-                          ],
-                        ),
-                      );
-                    }).toList(),
+                          );
+                        }).toList(),
                     onChanged: (Priority? newValue) {
                       if (newValue != null) {
                         setState(() {
@@ -420,48 +404,92 @@ class TodoListView extends StatelessWidget {
         backgroundColor: Theme.of(context).primaryColor,
         foregroundColor: Colors.white,
         actions: [
-          PopupMenuButton<FilterOption>(
-            icon: const Icon(Icons.filter_list),
-            tooltip: 'Filter todos',
-            onSelected: (FilterOption option) {
-              todoCubit.changeFilterOption(option);
-            },
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.tune),
+            tooltip: 'Sort & Filter',
             itemBuilder: (BuildContext context) {
-              return FilterOption.values.map((FilterOption option) {
-                return PopupMenuItem<FilterOption>(
-                  value: option,
-                  child: Row(
-                    children: [
-                      if (todoCubit.currentFilterOption == option)
-                        const Icon(Icons.check, size: 16),
-                      const SizedBox(width: 8),
-                      Text(_getFilterOptionLabel(option)),
-                    ],
+              return [
+                // Filter Section
+                const PopupMenuItem<String>(
+                  enabled: false,
+                  child: Text(
+                    'FILTER TASKS',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                      color: Colors.grey,
+                    ),
                   ),
-                );
-              }).toList();
-            },
-          ),
-          PopupMenuButton<SortOption>(
-            icon: const Icon(Icons.sort),
-            tooltip: 'Sort todos',
-            onSelected: (SortOption option) {
-              todoCubit.changeSortOption(option);
-            },
-            itemBuilder: (BuildContext context) {
-              return SortOption.values.map((SortOption option) {
-                return PopupMenuItem<SortOption>(
-                  value: option,
-                  child: Row(
-                    children: [
-                      if (todoCubit.currentSortOption == option)
-                        const Icon(Icons.check, size: 16),
-                      const SizedBox(width: 8),
-                      Text(_getSortOptionLabel(option)),
-                    ],
+                ),
+                ...FilterOption.values.map((FilterOption option) {
+                  return PopupMenuItem<String>(
+                    value: 'filter_${option.name}',
+                    child: Row(
+                      children: [
+                        Icon(
+                          todoCubit.currentFilterOption == option
+                              ? Icons.radio_button_checked
+                              : Icons.radio_button_unchecked,
+                          size: 16,
+                          color: todoCubit.currentFilterOption == option
+                              ? Colors.blue
+                              : Colors.grey,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(_getFilterOptionLabel(option)),
+                      ],
+                    ),
+                  );
+                }),
+                const PopupMenuDivider(),
+                // Sort Section
+                const PopupMenuItem<String>(
+                  enabled: false,
+                  child: Text(
+                    'SORT TASKS',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                      color: Colors.grey,
+                    ),
                   ),
+                ),
+                ...SortOption.values.map((SortOption option) {
+                  return PopupMenuItem<String>(
+                    value: 'sort_${option.name}',
+                    child: Row(
+                      children: [
+                        Icon(
+                          todoCubit.currentSortOption == option
+                              ? Icons.radio_button_checked
+                              : Icons.radio_button_unchecked,
+                          size: 16,
+                          color: todoCubit.currentSortOption == option
+                              ? Colors.blue
+                              : Colors.grey,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(_getSortOptionLabel(option)),
+                      ],
+                    ),
+                  );
+                }),
+              ];
+            },
+            onSelected: (String value) {
+              if (value.startsWith('filter_')) {
+                final filterName = value.substring(7);
+                final filterOption = FilterOption.values.firstWhere(
+                  (e) => e.name == filterName,
                 );
-              }).toList();
+                todoCubit.changeFilterOption(filterOption);
+              } else if (value.startsWith('sort_')) {
+                final sortName = value.substring(5);
+                final sortOption = SortOption.values.firstWhere(
+                  (e) => e.name == sortName,
+                );
+                todoCubit.changeSortOption(sortOption);
+              }
             },
           ),
         ],
@@ -557,9 +585,10 @@ class TodoListView extends StatelessWidget {
                             Icon(
                               Icons.flag,
                               size: 16,
-                              color: todo.priority == Priority.high
-                                  ? Colors.red
-                                  : todo.priority == Priority.medium
+                              color:
+                                  todo.priority == Priority.high
+                                      ? Colors.red
+                                      : todo.priority == Priority.medium
                                       ? Colors.orange
                                       : Colors.green,
                             ),
@@ -568,9 +597,10 @@ class TodoListView extends StatelessWidget {
                               '${todo.priority.displayName} Priority',
                               style: TextStyle(
                                 fontSize: 12,
-                                color: todo.priority == Priority.high
-                                    ? Colors.red
-                                    : todo.priority == Priority.medium
+                                color:
+                                    todo.priority == Priority.high
+                                        ? Colors.red
+                                        : todo.priority == Priority.medium
                                         ? Colors.orange
                                         : Colors.green,
                                 fontWeight: FontWeight.w500,
@@ -582,7 +612,7 @@ class TodoListView extends StatelessWidget {
                             ),
                           ],
                         ),
-                        ),
+                      ),
                     ],
                   ),
                   //description of the work
