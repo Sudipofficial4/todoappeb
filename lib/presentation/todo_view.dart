@@ -400,68 +400,58 @@ class TodoListView extends StatelessWidget {
   Widget build(BuildContext context) {
     final todoCubit = context.read<TodoCubit>();
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () {
-            Drawer(
-              child: Column(
-                children: [
-                  Container(
-                    color: Colors.blueGrey[900],
-                    height: 200,
-                    width: double.infinity,
-                    child: Center(
-                      child: Text(
-                        "Todo App",
-                        style: TextStyle(color: Colors.white70),
-                      ),
-                    ),
+      drawer: Drawer(
+        child: Column(
+          children: [
+            Container(
+              color: Colors.blueGrey[900],
+              height: 200,
+              width: double.infinity,
+              child: const Center(
+                child: Text(
+                  "Todo App",
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
                   ),
-                  ListTile(
-                    onTap: () {
-                      launchUrl(
-                        Uri.parse("https://www.sudipkoirala44.com.np/"),
-                      );
-                    },
-                    leading: Icon(Icons.person_2),
-                    title: Text(
-                      "Get In Touch",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  ListTile(
-                    onTap: () {
-                      launchUrl(
-                        Uri.parse(
-                          "https://www.facebook.com/sudip.koirala.415846",
-                        ),
-                      );
-                    },
-                    leading: Icon(Icons.facebook),
-                    title: Text(
-                      "About me",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ],
+                ),
               ),
-            );
-            //  Added drawer functionality or menu options
-            // ScaffoldMessenger.of(context).showSnackBar(
-            //   const SnackBar(
-            //     content: Text('Menu functionality coming soon!'),
-            //     duration: Duration(seconds: 2),
-            //   ),
-            // );
-          },
+            ),
+            ListTile(
+              onTap: () {
+                Navigator.pop(context); // Close drawer first
+                launchUrl(Uri.parse("https://www.sudipkoirala44.com.np/"));
+              },
+              leading: const Icon(Icons.person_2),
+              title: const Text(
+                "Get In Touch",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+            ListTile(
+              onTap: () {
+                Navigator.pop(context); // Close drawer first
+                launchUrl(
+                  Uri.parse("https://www.facebook.com/sudip.koirala.415846"),
+                );
+              },
+              leading: const Icon(Icons.facebook),
+              title: const Text(
+                "About me",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
         ),
+      ),
+      appBar: AppBar(
         title: const Text(
           'Todo App',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
         ),
         centerTitle: true,
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
         actions: [
           PopupMenuButton<String>(
