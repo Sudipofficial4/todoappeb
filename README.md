@@ -1,16 +1,17 @@
 # Todo App
 
-A Flutter-based Todo application built with clean architecture principles, using BLoC state management and Hive for local storage.
+A simple Flutter-based Todo application without splash screen and authentication, built with clean architecture principles, using BLoC state management and Hive for local storage.
+
 
 ## Features
 
-- ✅ Add new todos with title and description
-- ✅ Mark todos as completed/incomplete
-- ✅ Delete todos
-- ✅ Persistent local storage using Hive
-- ✅ Clean architecture with separation of concerns
-- ✅ BLoC pattern for state management
-- ✅ Responsive UI with empty state handling
+-  Add new todos with title, description, priority, duedate.
+-  Mark todos as completed/incomplete
+-  Delete todos
+-  Persistent local storage using Hive
+-  Clean architecture with separation of concerns
+-  BLoC pattern for state management
+-  Responsive UI with empty state handling
 
 ## Architecture
 
@@ -37,42 +38,43 @@ The app follows Clean Architecture principles:
 
 ### Installation
 
-1. Clone the repository
+1. Clone the repository (git clone https://github.com/Sudipofficial4/todoappeb.git)
 2. Install dependencies:
-   ```bash
+   bash -->
    flutter pub get
-   ```
+   
 
 3. Generate Hive adapters:
-   ```bash
+   bash -->
    dart run build_runner build
-   ```
+   
 
 4. Run the app:
-   ```bash
+   bash -->
    flutter run
-   ```
+   
 
 ### Testing
 
 Run tests with:
-```bash
+bash
 flutter test
-```
+
 
 ## Usage
 
-1. **Add Todo**: Tap the floating action button (+) to add a new todo
-2. **Complete Todo**: Tap the checkbox to mark a todo as completed
-3. **Delete Todo**: Tap the delete (trash) icon to remove a todo
+1. Add Todo: Tap the floating action button (+) to add a new todo
+2. Complete Todo: Tap the checkbox to mark a todo as completed
+3. Delete Todo: Tap the delete (trash) icon to remove a todo
+4. Update Todo: Tap the task to edit the necessary fields.
 
 ## Dependencies
 
-- `flutter_bloc` - State management
-- `hive_flutter` - Local database
-- `hive` - NoSQL database
-- `build_runner` - Code generation
-- `hive_generator` - Hive adapter generation
+- flutter_bloc - State management
+- hive_flutter - Local database
+- hive - NoSQL database
+- build_runner- Code generation
+- hive_generator- Hive adapter generation
 
 ## Project Structure
 
