@@ -45,10 +45,16 @@ class TodoListView extends StatelessWidget {
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () async {
+                            final now = DateTime.now();
+                            final today = DateTime(
+                              now.year,
+                              now.month,
+                              now.day,
+                            );
                             final date = await showDatePicker(
                               context: context,
-                              initialDate: DateTime.now(),
-                              firstDate: DateTime(2000),
+                              initialDate: today,
+                              firstDate: today, // Prevent selecting past dates
                               lastDate: DateTime(2100),
                             );
                             if (date != null && context.mounted) {
@@ -57,15 +63,32 @@ class TodoListView extends StatelessWidget {
                                 initialTime: TimeOfDay.now(),
                               );
                               if (time != null) {
-                                setState(() {
-                                  selectedDueDate = DateTime(
-                                    date.year,
-                                    date.month,
-                                    date.day,
-                                    time.hour,
-                                    time.minute,
-                                  );
-                                });
+                                final selectedDateTime = DateTime(
+                                  date.year,
+                                  date.month,
+                                  date.day,
+                                  time.hour,
+                                  time.minute,
+                                );
+
+                                // Check if the selected time is in the past for today's date
+                                if (selectedDateTime.isAfter(now)) {
+                                  setState(() {
+                                    selectedDueDate = selectedDateTime;
+                                  });
+                                } else {
+                                  // Show error message for past time
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Please select a future date and time',
+                                        ),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                  }
+                                }
                               }
                             }
                           },
