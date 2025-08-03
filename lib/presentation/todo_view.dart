@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo/domain/models/todo.dart';
 import 'package:todo/presentation/todo_cubit.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class TodoListView extends StatelessWidget {
   const TodoListView({super.key});
@@ -403,13 +404,56 @@ class TodoListView extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.menu),
           onPressed: () {
-            // TODO: Add drawer functionality or menu options
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Menu functionality coming soon!'),
-                duration: Duration(seconds: 2),
+            Drawer(
+              child: Column(
+                children: [
+                  Container(
+                    color: Colors.blueGrey[900],
+                    height: 200,
+                    width: double.infinity,
+                    child: Center(
+                      child: Text(
+                        "Todo App",
+                        style: TextStyle(color: Colors.white70),
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      launchUrl(
+                        Uri.parse("https://www.sudipkoirala44.com.np/"),
+                      );
+                    },
+                    leading: Icon(Icons.person_2),
+                    title: Text(
+                      "Get In Touch",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      launchUrl(
+                        Uri.parse(
+                          "https://www.facebook.com/sudip.koirala.415846",
+                        ),
+                      );
+                    },
+                    leading: Icon(Icons.facebook),
+                    title: Text(
+                      "About me",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
               ),
             );
+            //  Added drawer functionality or menu options
+            // ScaffoldMessenger.of(context).showSnackBar(
+            //   const SnackBar(
+            //     content: Text('Menu functionality coming soon!'),
+            //     duration: Duration(seconds: 2),
+            //   ),
+            // );
           },
         ),
         title: const Text(
@@ -513,10 +557,11 @@ class TodoListView extends StatelessWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.cyanAccent,
         onPressed: () {
           _showAddTodoDialog(context);
         },
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.add, color: Colors.black, size: 30),
       ),
       //bloc builder
       body: BlocBuilder<TodoCubit, List<Todo>>(
