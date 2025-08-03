@@ -5,6 +5,22 @@ import 'package:todo/presentation/todo_cubit.dart';
 
 class TodoListView extends StatelessWidget {
   const TodoListView({super.key});
+
+  String _getSortOptionLabel(SortOption option) {
+    switch (option) {
+      case SortOption.createdDateNewest:
+        return 'Created: Newest First';
+      case SortOption.createdDateOldest:
+        return 'Created: Oldest First';
+      case SortOption.dueDateNearest:
+        return 'Due Date: Nearest First';
+      case SortOption.dueDateFarthest:
+        return 'Due Date: Farthest First';
+      case SortOption.alphabetical:
+        return 'Alphabetical';
+    }
+  }
+
   void _showEditTodoDialog(BuildContext context, Todo todo) {
     final todoCubit = context.read<TodoCubit>();
     final titleController = TextEditingController(text: todo.title);
@@ -316,6 +332,30 @@ class TodoListView extends StatelessWidget {
         title: const Text('Todo App'),
         backgroundColor: Theme.of(context).primaryColor,
         foregroundColor: Colors.white,
+        actions: [
+          PopupMenuButton<SortOption>(
+            icon: const Icon(Icons.sort),
+            tooltip: 'Sort todos',
+            onSelected: (SortOption option) {
+              todoCubit.changeSortOption(option);
+            },
+            itemBuilder: (BuildContext context) {
+              return SortOption.values.map((SortOption option) {
+                return PopupMenuItem<SortOption>(
+                  value: option,
+                  child: Row(
+                    children: [
+                      if (todoCubit.currentSortOption == option)
+                        const Icon(Icons.check, size: 16),
+                      const SizedBox(width: 8),
+                      Text(_getSortOptionLabel(option)),
+                    ],
+                  ),
+                );
+              }).toList();
+            },
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
