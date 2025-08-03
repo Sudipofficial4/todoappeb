@@ -23,7 +23,7 @@ void main() async {
     }
   } catch (e) {
     // If Hive initialization fails completely, we'll handle it gracefully
-    print('Error initializing Hive: $e');
+    //print('Error initializing Hive: $e');
   }
 
   runApp(const MyApp());
@@ -90,7 +90,7 @@ class _MyAppState extends State<MyApp> {
                         setState(() {});
                       }
                     } catch (e) {
-                      print('Error clearing database: $e');
+                      //print('Error clearing database: $e');
                     }
                   },
                   child: const Text('Clear Data & Restart'),

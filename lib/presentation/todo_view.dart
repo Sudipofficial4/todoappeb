@@ -681,7 +681,7 @@ class TodoListView extends StatelessWidget {
                               vertical: 2.0,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.red.withOpacity(0.1),
+                              color: Colors.white,
                               border: Border.all(color: Colors.red, width: 1),
                               borderRadius: BorderRadius.circular(12),
                             ),
