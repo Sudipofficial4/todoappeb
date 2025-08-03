@@ -32,9 +32,10 @@ class HiveTodo extends HiveObject {
       isCompleted: isCompleted,
       createdAt: createdAt,
       dueDate: dueDate,
-      priority: priority != null 
-          ? Priority.values[priority! - 1] 
-          : Priority.medium, // Default to medium if null
+      priority:
+          priority != null
+              ? Priority.values[priority! - 1]
+              : Priority.medium, // Default to medium if null
     );
   }
 

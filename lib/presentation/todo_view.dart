@@ -400,7 +400,23 @@ class TodoListView extends StatelessWidget {
     final todoCubit = context.read<TodoCubit>();
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Todo App'),
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: () {
+            // TODO: Add drawer functionality or menu options
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Menu functionality coming soon!'),
+                duration: Duration(seconds: 2),
+              ),
+            );
+          },
+        ),
+        title: const Text(
+          'Todo App',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+        ),
+        centerTitle: true,
         backgroundColor: Theme.of(context).primaryColor,
         foregroundColor: Colors.white,
         actions: [
@@ -431,9 +447,10 @@ class TodoListView extends StatelessWidget {
                               ? Icons.radio_button_checked
                               : Icons.radio_button_unchecked,
                           size: 16,
-                          color: todoCubit.currentFilterOption == option
-                              ? Colors.blue
-                              : Colors.grey,
+                          color:
+                              todoCubit.currentFilterOption == option
+                                  ? Colors.blue
+                                  : Colors.grey,
                         ),
                         const SizedBox(width: 8),
                         Text(_getFilterOptionLabel(option)),
@@ -464,9 +481,10 @@ class TodoListView extends StatelessWidget {
                               ? Icons.radio_button_checked
                               : Icons.radio_button_unchecked,
                           size: 16,
-                          color: todoCubit.currentSortOption == option
-                              ? Colors.blue
-                              : Colors.grey,
+                          color:
+                              todoCubit.currentSortOption == option
+                                  ? Colors.blue
+                                  : Colors.grey,
                         ),
                         const SizedBox(width: 8),
                         Text(_getSortOptionLabel(option)),

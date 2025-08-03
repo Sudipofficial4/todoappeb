@@ -12,11 +12,7 @@ enum SortOption {
   oldestFirst,
 }
 
-enum FilterOption {
-  all,
-  active,
-  completed,
-}
+enum FilterOption { all, active, completed }
 
 extension SortOptionExtension on SortOption {
   String get displayName {

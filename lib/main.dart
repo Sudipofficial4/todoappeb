@@ -11,7 +11,7 @@ void main() async {
   try {
     await Hive.initFlutter();
     Hive.registerAdapter(HiveTodoAdapter());
-    
+
     // Try to open the box, if it fails, delete and recreate it
     try {
       await Hive.openBox<HiveTodo>('todos');
@@ -55,11 +55,11 @@ class _MyAppState extends State<MyApp> {
       // If there's an error with Hive, show an error screen
       return MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Todo App',
+        title: 'Todo Apps',
         theme: ThemeData(primarySwatch: Colors.blue),
         home: Scaffold(
           appBar: AppBar(
-            title: const Text('Todo App'),
+            title: const Text('Todo Apps', textAlign: TextAlign.center),
             backgroundColor: Colors.blue,
             foregroundColor: Colors.white,
           ),
