@@ -5,6 +5,156 @@ import 'package:todo/presentation/todo_cubit.dart';
 
 class TodoListView extends StatelessWidget {
   const TodoListView({super.key});
+  void _showEditTodoDialog(BuildContext context, Todo todo) {
+    final todoCubit = context.read<TodoCubit>();
+    final titleController = TextEditingController(text: todo.title);
+    final descriptionController = TextEditingController(text: todo.description);
+    DateTime? selectedDueDate = todo.dueDate;
+
+    // Show a dialog to edit the todo
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Edit Todo'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: titleController,
+                    decoration: const InputDecoration(
+                      labelText: 'Title *',
+                      border: OutlineInputBorder(),
+                    ),
+                    autofocus: true,
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: descriptionController,
+                    decoration: const InputDecoration(
+                      labelText: 'Description (optional)',
+                      border: OutlineInputBorder(),
+                    ),
+                    maxLines: 3,
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            final now = DateTime.now();
+                            final today = DateTime(
+                              now.year,
+                              now.month,
+                              now.day,
+                            );
+                            final date = await showDatePicker(
+                              context: context,
+                              initialDate: selectedDueDate ?? today,
+                              firstDate: today, // Prevent selecting past dates
+                              lastDate: DateTime(2100),
+                            );
+                            if (date != null && context.mounted) {
+                              final time = await showTimePicker(
+                                context: context,
+                                initialTime:
+                                    selectedDueDate != null
+                                        ? TimeOfDay.fromDateTime(
+                                          selectedDueDate!,
+                                        )
+                                        : TimeOfDay.now(),
+                              );
+                              if (time != null) {
+                                final selectedDateTime = DateTime(
+                                  date.year,
+                                  date.month,
+                                  date.day,
+                                  time.hour,
+                                  time.minute,
+                                );
+
+                                // Check if the selected time is in the past for today's date
+                                if (selectedDateTime.isAfter(now)) {
+                                  setState(() {
+                                    selectedDueDate = selectedDateTime;
+                                  });
+                                } else {
+                                  // Show error message for past time
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Please select a future date and time',
+                                        ),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          child: const Text('Pick Date & Time'),
+                        ),
+                      ),
+                      if (selectedDueDate != null)
+                        IconButton(
+                          onPressed: () {
+                            setState(() {
+                              selectedDueDate = null;
+                            });
+                          },
+                          icon: const Icon(Icons.clear),
+                          tooltip: 'Clear date',
+                        ),
+                    ],
+                  ),
+                  if (selectedDueDate != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text(
+                        'Due: ${_formatDateTime(selectedDueDate!)}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    if (titleController.text.trim().isNotEmpty) {
+                      final updatedTodo = Todo(
+                        id: todo.id,
+                        title: titleController.text.trim(),
+                        description: descriptionController.text.trim(),
+                        createdAt: todo.createdAt,
+                        isCompleted: todo.isCompleted,
+                        dueDate: selectedDueDate,
+                      );
+                      todoCubit.updateTodo(updatedTodo);
+                      Navigator.of(context).pop();
+                    }
+                  },
+                  child: const Text('Update'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   void _showAddTodoDialog(BuildContext context) {
     final todoCubit = context.read<TodoCubit>();
     final titleController = TextEditingController();
@@ -204,6 +354,7 @@ class TodoListView extends StatelessWidget {
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 4.0),
                 child: ListTile(
+                  onTap: () => _showEditTodoDialog(context, todo),
                   //title with due date
                   title: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

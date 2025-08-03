@@ -24,6 +24,12 @@ class TodoCubit extends Cubit<List<Todo>> {
     fetchTodos();
   }
 
+  //update a todo
+  Future<void> updateTodo(Todo updatedTodo) async {
+    await todoRepo.updateTodo(updatedTodo);
+    fetchTodos();
+  }
+
   //delete a todo
   Future<void> deleteTodo(Todo todo) async {
     await todoRepo.deleteTodo(todo);
