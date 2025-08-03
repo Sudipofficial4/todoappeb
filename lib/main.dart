@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:todo/data/models/hive_todo.dart';
-import 'package:todo/presentation/todo_view.dart';
+import 'package:todo/data/models/repository/hive_todo_repo.dart';
+import 'package:todo/presentation/todo_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,11 +25,16 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
+    // Get the Hive box for todos
+    final todoBox = Hive.box<HiveTodo>('todos');
+    // Create the repository instance
+    final todoRepo = HiveTodoRepository(todoBox);
+    
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Todo App',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const TodoListView(),
+      home: TodoPage(todoRepo: todoRepo),
     );
   }
 }
